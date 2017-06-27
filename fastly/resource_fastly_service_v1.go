@@ -283,15 +283,18 @@ func resourceServiceV1() *schema.Resource {
 							Default:     "",
 							Description: "SSL certificate hostname for SNI verification",
 						},
-						// UseSSL is something we want to support in the future, but
-						// requires SSL setup we don't yet have
-						// TODO: Provide all SSL fields from https://docs.fastly.com/api/config#backend
-						// "use_ssl": &schema.Schema{
-						// 	Type:        schema.TypeBool,
-						// 	Optional:    true,
-						// 	Default:     false,
-						// 	Description: "Whether or not to use SSL to reach the Backend",
-						// },
+						"ssl_ca_cert": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "",
+							Description: "CA certificate attached to origin",
+						},
+						"use_ssl": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Default:     false,
+							Description: "Whether or not to use SSL to reach the Backend",
+						},
 						"weight": {
 							Type:        schema.TypeInt,
 							Optional:    true,
@@ -1208,6 +1211,8 @@ func resourceServiceV1Update(d *schema.ResourceData, meta interface{}) error {
 					SSLHostname:         df["ssl_hostname"].(string),
 					SSLCertHostname:     df["ssl_cert_hostname"].(string),
 					SSLSNIHostname:      df["ssl_sni_hostname"].(string),
+					SSLCACert:           df["ssl_ca_cert"].(string),
+					UseSSL:              gofastly.CBool(df["use_ssl"].(bool)),
 					Shield:              df["shield"].(string),
 					Port:                uint(df["port"].(int)),
 					BetweenBytesTimeout: uint(df["between_bytes_timeout"].(int)),
@@ -2196,6 +2201,8 @@ func flattenBackends(backendList []*gofastly.Backend) []map[string]interface{} {
 			"ssl_hostname":          b.SSLHostname,
 			"ssl_cert_hostname":     b.SSLCertHostname,
 			"ssl_sni_hostname":      b.SSLSNIHostname,
+			"ssl_ca_cert":           b.SSLCACert,
+			"use_ssl":               b.UseSSL,
 			"weight":                int(b.Weight),
 			"request_condition":     b.RequestCondition,
 			"healthcheck":           b.HealthCheck,
