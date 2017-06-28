@@ -54,6 +54,7 @@ func TestAccFastlyServiceV1_gcslogging(t *testing.T) {
 	var service gofastly.ServiceDetail
 	name := fmt.Sprintf("tf-test-%s", acctest.RandString(10))
 	gcsName := fmt.Sprintf("gcs %s", acctest.RandString(10))
+	domainName := testDomainName()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -61,7 +62,7 @@ func TestAccFastlyServiceV1_gcslogging(t *testing.T) {
 		CheckDestroy: testAccCheckServiceV1Destroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccServiceV1Config_gcs(name, gcsName),
+				Config: testAccServiceV1Config_gcs(name, domainName, gcsName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckServiceV1Exists("fastly_service_v1.foo", &service),
 					testAccCheckFastlyServiceV1Attributes_gcs(&service, name, gcsName),
@@ -100,15 +101,15 @@ func testAccCheckFastlyServiceV1Attributes_gcs(service *gofastly.ServiceDetail, 
 	}
 }
 
-func testAccServiceV1Config_gcs(name, gcsName string) string {
-	backendName := fmt.Sprintf("%s.aws.amazon.com", acctest.RandString(3))
+func testAccServiceV1Config_gcs(name, domain, gcsName string) string {
+	backendName := fmt.Sprintf("%s.aws.%s.com", acctest.RandString(3), domain)
 
 	return fmt.Sprintf(`
 resource "fastly_service_v1" "foo" {
   name = "%s"
 
   domain {
-    name    = "test.notadomain.com"
+    name    = "%s"
     comment = "tf-testing-domain"
   }
 
@@ -127,5 +128,5 @@ resource "fastly_service_v1" "foo" {
 	}
 
   force_destroy = true
-}`, name, backendName, gcsName)
+}`, name, domain, backendName, gcsName)
 }

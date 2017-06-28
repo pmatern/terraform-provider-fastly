@@ -14,7 +14,7 @@ import (
 func TestAccFastlyServiceV1_healthcheck_basic(t *testing.T) {
 	var service gofastly.ServiceDetail
 	name := fmt.Sprintf("tf-test-%s", acctest.RandString(10))
-	domainName := fmt.Sprintf("%s.notadomain.com", acctest.RandString(10))
+	domainName := testDomainName()
 
 	log1 := gofastly.HealthCheck{
 		Version:          1,

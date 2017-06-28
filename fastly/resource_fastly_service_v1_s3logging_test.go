@@ -15,7 +15,7 @@ import (
 func TestAccFastlyServiceV1_s3logging_basic(t *testing.T) {
 	var service gofastly.ServiceDetail
 	name := fmt.Sprintf("tf-test-%s", acctest.RandString(10))
-	domainName1 := fmt.Sprintf("%s.notadomain.com", acctest.RandString(10))
+	domainName1 := testDomainName()
 
 	log1 := gofastly.S3{
 		Version:           1,
@@ -82,7 +82,7 @@ func TestAccFastlyServiceV1_s3logging_basic(t *testing.T) {
 func TestAccFastlyServiceV1_s3logging_s3_env(t *testing.T) {
 	var service gofastly.ServiceDetail
 	name := fmt.Sprintf("tf-test-%s", acctest.RandString(10))
-	domainName1 := fmt.Sprintf("%s.notadomain.com", acctest.RandString(10))
+	domainName1 := testDomainName()
 
 	// set env Vars to something we expect
 	resetEnv := setEnv("someEnv", t)
@@ -125,7 +125,7 @@ func TestAccFastlyServiceV1_s3logging_s3_env(t *testing.T) {
 func TestAccFastlyServiceV1_s3logging_formatVersion(t *testing.T) {
 	var service gofastly.ServiceDetail
 	name := fmt.Sprintf("tf-test-%s", acctest.RandString(10))
-	domainName1 := fmt.Sprintf("%s.notadomain.com", acctest.RandString(10))
+	domainName1 := testDomainName()
 
 	log1 := gofastly.S3{
 		Version:         1,

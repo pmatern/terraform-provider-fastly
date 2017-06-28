@@ -2,6 +2,7 @@ package fastly
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"testing"
 
@@ -10,6 +11,15 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 	gofastly "github.com/sethvargo/go-fastly"
 )
+
+func testDomainName() string {
+	envVar := "TEST_BASE_DOMAIN"
+	testDomain := os.Getenv(envVar)
+	if testDomain == "" {
+		testDomain = "notadomain"
+	}
+	return fmt.Sprintf("%s.%s.com", acctest.RandString(10), testDomain)
+}
 
 func TestResourceFastlyFlattenDomains(t *testing.T) {
 	cases := []struct {
@@ -120,8 +130,8 @@ func TestAccFastlyServiceV1_updateDomain(t *testing.T) {
 	var service gofastly.ServiceDetail
 	name := fmt.Sprintf("tf-test-%s", acctest.RandString(10))
 	nameUpdate := fmt.Sprintf("tf-test-%s", acctest.RandString(10))
-	domainName1 := fmt.Sprintf("%s.notadomain.com", acctest.RandString(10))
-	domainName2 := fmt.Sprintf("%s.notadomain.com", acctest.RandString(10))
+	domainName1 := testDomainName()
+	domainName2 := testDomainName()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
